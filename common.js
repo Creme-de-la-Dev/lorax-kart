@@ -328,7 +328,7 @@ var Dom = {
       var music = Dom.get('music');
       music.muted = true;
       music.loop = true;
-      music.volume = 0.35; // shhhh! annoying music!
+      music.volume = 0.2; // shhhh! annoying music!
       music.muted = (Dom.storage.muted === "true");
       music.play();
       Dom.toggleClassName('mute', 'on', music.muted);
