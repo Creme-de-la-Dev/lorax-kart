@@ -2,22 +2,18 @@
 
 <html>
 <head>
-  <title>Javascript Racer - v4 (final)</title>
+  <title>Lorax Kart</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link href="common.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" href="images/icon.png">
 </head>
 
 <body>
-
-  <table id="controls">
-    <tr>
-      <td colspan="2">
-        <a href='v1.straight.html'>straight</a> |
-        <a href='v2.curves.html'>curves</a>     |
-        <a href='v3.hills.html'>hills</a>       |
-        <a href='v4.final.html'>final</a>
-      </td>
-    </tr>
+  <div id="buttons">
+    <button id="settings" onclick='toggleSettings()'>Settings</button>
+    <button id="instructionsBtn" onclick='toggleInstructions()'>Instructions</button>
+  </div>
+  <table id="controls" class="hidden">
     <tr><td id="fps" colspan="2" align="right"></td></tr>
     <tr>
       <th><label for="resolution">Resolution :</label></th>
@@ -63,8 +59,9 @@
     </tr>
   </table>
 
-  <div id='instructions'>
-    <p>Use the <b>arrow keys</b> to drive the car.</p>
+  <div id='instructions' class="hidden">
+    <p>Use the <b>arrow keys</b> or <b>WASD</b> to drive the car.</p>
+    <p>Complete a lap under 1:50 minutes to pick up Flavio at the Airport!</p>
   </div>
 
   <div id="racer">
@@ -434,6 +431,20 @@
 
     function findSegment(z) {
       return segments[Math.floor(z/segmentLength) % segments.length];
+    }
+
+    //=========================================================================
+    // SETTINGS
+    //=========================================================================
+    
+    function toggleSettings() {
+        const controls = Dom.get('controls');
+        controls.classList.toggle('hidden');
+    }
+
+    function toggleInstructions() {
+        const instructions = Dom.get('instructions');
+        instructions.classList.toggle('hidden');      
     }
 
     //=========================================================================
