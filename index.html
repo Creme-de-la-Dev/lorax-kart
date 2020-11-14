@@ -21,6 +21,8 @@
     <button id="settings" onclick='toggleSettings()'>Settings</button>
     <button id="instructionsBtn" onclick='toggleInstructions()'>Instructions</button>
   </div>
+  <p id="username"></p>
+  <ol id="scores"></ol>
   <table id="controls" class="hidden">
     <tr><td id="fps" colspan="2" align="right"></td></tr>
     <tr>
@@ -108,9 +110,40 @@
 
   <span id="mute"></span>
 
+  <!-- FIREBASE -->
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-database.js"></script>
+  <script src="firebase.js"></script>
   <script src="stats.js"></script>
   <script src="common.js"></script>
   <script>
+
+    // User Logic
+    function getUsername(){   
+      var username = prompt("Enter your name");
+      Dom.storage.user = username
+      document.getElementById("username").innerHTML = `Welcome, <a onClick="getUsername()">${username || "Anon"}</a>`
+    }
+  //  if (Dom.storage.user == null) {
+      getUsername();
+  //  }
+    // Database Fetch
+    var dbRef = database.ref('ranking')
+    console.warn(dbRef)
+    dbRef.on('value', snapshot => {
+      var list = document.getElementById('scores');
+      list.innerHTML = "";
+      snapshot.forEach((child, index) => {
+        var score = child.val();
+        list.insertAdjacentHTML('beforeend',`<li>${score.user} - ${score.lap} min</li>`)
+      })
+    })
 
     var fps            = 60;                      // how many 'update' frames per second
     var step           = 1/fps;                   // how long is each frame (in seconds)
@@ -177,8 +210,13 @@
     // UPDATE THE GAME WORLD
     //=========================================================================
 
-    function update(dt) {
+    function secondsToMinutes(time) {
+      var minutes = Math.floor(time / 60);
+      var seconds = time - minutes * 60;
+      return (minutes + seconds / 100).toFixed(3)
+    }
 
+    function update(dt) {
       var n, car, carW, sprite, spriteW;
       var playerSegment = findSegment(position+playerZ);
       var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
@@ -244,8 +282,16 @@
 
       if (position > playerZ) {
         if (currentLapTime && (startPosition < playerZ)) {
+          // New Lap MACACO
+          console.warn(secondsToMinutes(currentLapTime))
+          database.ref('ranking').push({
+              user: Dom.storage.user,
+              lap: secondsToMinutes(currentLapTime)
+          })
           lastLapTime    = currentLapTime;
           currentLapTime = 0;
+
+          // if lap macaco 1:50
           if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
             Dom.storage.fast_lap_time = lastLapTime;
             updateHud('fast_lap_time', formatTime(lastLapTime));
