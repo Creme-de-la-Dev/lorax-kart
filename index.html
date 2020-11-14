@@ -21,8 +21,10 @@
     <button id="settings" onclick='toggleSettings()'>Settings</button>
     <button id="instructionsBtn" onclick='toggleInstructions()'>Instructions</button>
   </div>
-  <p id="username"></p>
-  <ol id="scores"></ol>
+  <div id="ranking">
+    <p id="username"></p>
+    <ol id="scores"></ol>    
+  </div>
   <table id="controls" class="hidden">
     <tr><td id="fps" colspan="2" align="right"></td></tr>
     <tr>
@@ -128,20 +130,20 @@
     function getUsername(){   
       var username = prompt("Enter your name");
       Dom.storage.user = username
-      document.getElementById("username").innerHTML = `Welcome, <a onClick="getUsername()">${username || "Anon"}</a>`
+      document.getElementById("username").innerHTML = `Welcome, ${username || "Anon"} <a id="quadradinho" onClick="getUsername()">[Change Name]</a>`
     }
   //  if (Dom.storage.user == null) {
       getUsername();
   //  }
     // Database Fetch
-    var dbRef = database.ref('ranking')
+    var dbRef = database.ref('ranking').orderByChild('lap').limitToFirst(10);
     console.warn(dbRef)
     dbRef.on('value', snapshot => {
       var list = document.getElementById('scores');
       list.innerHTML = "";
       snapshot.forEach((child, index) => {
         var score = child.val();
-        list.insertAdjacentHTML('beforeend',`<li>${score.user} - ${score.lap} min</li>`)
+        list.insertAdjacentHTML('beforeend',`<li>${score.user || "Anon"} - ${score.lap} min</li>`)
       })
     })
 
@@ -210,12 +212,6 @@
     // UPDATE THE GAME WORLD
     //=========================================================================
 
-    function secondsToMinutes(time) {
-      var minutes = Math.floor(time / 60);
-      var seconds = time - minutes * 60;
-      return (minutes + seconds / 100).toFixed(3)
-    }
-
     function update(dt) {
       var n, car, carW, sprite, spriteW;
       var playerSegment = findSegment(position+playerZ);
@@ -283,10 +279,10 @@
       if (position > playerZ) {
         if (currentLapTime && (startPosition < playerZ)) {
           // New Lap MACACO
-          console.warn(secondsToMinutes(currentLapTime))
+          console.warn(formatTime(currentLapTime))
           database.ref('ranking').push({
               user: Dom.storage.user,
-              lap: secondsToMinutes(currentLapTime)
+              lap: formatTime(currentLapTime),
           })
           lastLapTime    = currentLapTime;
           currentLapTime = 0;
