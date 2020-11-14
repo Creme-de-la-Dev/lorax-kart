@@ -128,13 +128,20 @@
 
     // User Logic
     function getUsername(){   
-      var username = prompt("Enter your name");
-      Dom.storage.user = username
+      var username = prompt("Enter your name").substring(0,15);
+      Dom.storage.user = username;
+      setUserName(username);
+    }
+
+    function setUserName(username) {
       document.getElementById("username").innerHTML = `Welcome, ${username || "Anon"} <a id="quadradinho" onClick="getUsername()">[Change Name]</a>`
     }
-  //  if (Dom.storage.user == null) {
+
+    if (Dom.storage.user == null) {
       getUsername();
-  //  }
+    } else {
+      setUserName(Dom.storage.user);
+    }
     // Database Fetch
     var dbRef = database.ref('ranking').orderByChild('lap').limitToFirst(10);
     console.warn(dbRef)
