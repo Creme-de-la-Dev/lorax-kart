@@ -285,16 +285,16 @@
 
       if (position > playerZ) {
         if (currentLapTime && (startPosition < playerZ)) {
-          // New Lap MACACO
-          console.warn(formatTime(currentLapTime))
-          database.ref('ranking').push({
+          if (currentLapTime > 100) {
+            database.ref('ranking').push({
               user: Dom.storage.user,
               lap: formatTime(currentLapTime),
-          })
+            })
+          }
+
           lastLapTime    = currentLapTime;
           currentLapTime = 0;
 
-          // if lap macaco 1:50
           if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
             Dom.storage.fast_lap_time = lastLapTime;
             updateHud('fast_lap_time', formatTime(lastLapTime));
