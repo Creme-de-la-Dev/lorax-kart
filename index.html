@@ -144,7 +144,6 @@
     }
     // Database Fetch
     var dbRef = database.ref('ranking').orderByChild('lap').limitToFirst(10);
-    console.warn(dbRef)
     dbRef.on('value', snapshot => {
       var list = document.getElementById('scores');
       list.innerHTML = "";
