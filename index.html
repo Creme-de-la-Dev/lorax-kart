@@ -288,6 +288,7 @@
             database.ref('ranking').push({
               user: Dom.storage.user,
               lap: formatTime(currentLapTime),
+              created_at: new Date()
             })
           }
 
