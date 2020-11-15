@@ -125,19 +125,17 @@
   <script src="stats.js"></script>
   <script src="common.js"></script>
   <script>
-
     // User Logic
     function getUsername(){   
       var username = prompt("Enter your name").substring(0,15);
-      Dom.storage.user = username;
+      Dom.storage.user = username !== null ? username : "Anon"
       setUserName(username);
     }
 
     function setUserName(username) {
       document.getElementById("username").innerHTML = `Welcome, ${username || "Anon"} <a id="quadradinho" onClick="getUsername()">[Change Name]</a>`
     }
-
-    if (Dom.storage.user == null) {
+    if (Dom.storage.user == null || Dom.storage.user == "null") {
       getUsername();
     } else {
       setUserName(Dom.storage.user);
@@ -286,9 +284,9 @@
         if (currentLapTime && (startPosition < playerZ)) {
           if (currentLapTime > 100) {
             database.ref('ranking').push({
-              user: Dom.storage.user,
+              user: Dom.storage.user || "Anon",
               lap: formatTime(currentLapTime),
-              created_at: new Date()
+              created_at: (new Date()).toString()
             })
           }
 
